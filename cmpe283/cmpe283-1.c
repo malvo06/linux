@@ -144,7 +144,7 @@ struct capability_info entryctl[11] =
 	{ 17, "Conceal VMX from PT" },
 	{ 18, "Load IA32_RTIT_CTL" },
 	{ 20, "Load CET state" }
-}
+};
 /*
  * report_capability
  *
@@ -158,6 +158,7 @@ struct capability_info entryctl[11] =
  *  hi: high 32 bits of capability MSR value describing this feature
  */
 void
+
 report_capability(struct capability_info *cap, uint8_t len, uint32_t lo,
     uint32_t hi)
 {
@@ -200,7 +201,7 @@ detect_vmx_features(void)
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(procbased, 5, lo, hi);
 
-	check_bit_63();
+	/*check_bit_63();
 
 	/* Secondary Pinbased controls */
 	rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
@@ -220,7 +221,7 @@ detect_vmx_features(void)
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(entryctl, 5, lo, hi);
 
-	check_bit_55();
+	/*check_bit_55();
 
 }
 
