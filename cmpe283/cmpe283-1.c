@@ -201,7 +201,7 @@ detect_vmx_features(void)
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(procbased, 5, lo, hi);
 
-	/*check_bit_63();
+	/*check_bit_63();*/
 
 	/* Secondary Pinbased controls */
 	rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
@@ -221,7 +221,7 @@ detect_vmx_features(void)
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(entryctl, 5, lo, hi);
 
-	/*check_bit_55();
+	/* check_bit_55(); */
 
 }
 
