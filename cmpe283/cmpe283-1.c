@@ -11,7 +11,7 @@
  * Model specific registers (MSRs) by the module.
  * See SDM volume 4, section 2.1
  */
-#define IA32_VMX_PINBASED_CTLS	0x481
+#define IA32_VMX_PINBASED_CTLS 0x481
 #define IA32_VMX_PROCBASED_CTLS 0x482
 #define IA32_VMX_PROCBASED_CTLS2 0x48B
 #define IA32_VMX_EXIT_CTLS 0x483
@@ -190,7 +190,7 @@ detect_vmx_features(void)
 
 	/* Pinbased controls */
 	rdmsr(IA32_VMX_PINBASED_CTLS, lo, hi);
-	pr_info("Pinbased Controls MSR: 0x%llx\n",
+	pr_info("Pinbased Controls MSR: 0x%llx, IA32_VMX_PINBASED_CTLS\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(pinbased, 5, lo, hi);
 
@@ -201,7 +201,7 @@ detect_vmx_features(void)
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(procbased, 21, lo, hi);
 
-	/*check_bit_63();*/
+	check_bit_63();
 
 	/* Secondary Pinbased controls */
 	rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
