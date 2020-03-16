@@ -199,7 +199,7 @@ detect_vmx_features(void)
 	rdmsr(IA32_VMX_PROCBASED_CTLS, lo, hi);
 	pr_info("Procbased Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(procbased, 5, lo, hi);
+	report_capability(procbased, 21, lo, hi);
 
 	/*check_bit_63();*/
 
@@ -207,19 +207,19 @@ detect_vmx_features(void)
 	rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
 	pr_info("Secondary Processor Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(procbased2, 5, lo, hi);
+	report_capability(procbased2, 27, lo, hi);
 
 	/* Exit controls */
 	rdmsr(IA32_VMX_EXIT_CTLS, lo, hi);
 	pr_info("Exit Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(exitctl, 5, lo, hi);
+	report_capability(exitctl, 13, lo, hi);
 
 	/* Entry based controls */
 	rdmsr(IA32_VMX_ENTRY_CTLS, lo, hi);
 	pr_info("Entry Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(entryctl, 5, lo, hi);
+	report_capability(entryctl, 11, lo, hi);
 
 	/* check_bit_55(); */
 
