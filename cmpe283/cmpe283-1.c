@@ -46,7 +46,7 @@ struct capability_info pinbased[5] =
 /*
 * Processor based controls
 */
-struct capability_info procbased[20] =
+struct capability_info procbased[21] =
 {
 	{ 2, "Interrupt-window exiting" },
 	{ 3, "Use TSC offsetting" },
@@ -110,7 +110,7 @@ struct capability_info procbased2[27] =
 /*
 * Exit vm controls
 */
-struct capability_info exit[13] =
+struct capability_info exitctl[13] =
 {
 	{ 2, "Save debug controls" },
 	{ 9, "Host address-space size" },
@@ -125,13 +125,13 @@ struct capability_info exit[13] =
 	{ 24, "Conceal VMX from PT" },
 	{ 25, "Clear IA32_RTIT_CTL" },
 	{ 28, "Load CET state" }
-}
+};
 
 
 /*
 * Entry vm controls
 */
-struct capability_info entry[11] =
+struct capability_info entryctl[11] =
 {
 	{ 2, "Load debug controls" },
 	{ 9, "IA-32e mode guest" },
@@ -212,13 +212,13 @@ detect_vmx_features(void)
 	rdmsr(IA32_VMX_EXIT_CTLS, lo, hi);
 	pr_info("Exit Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(exit, 5, lo, hi);
+	report_capability(exitctl, 5, lo, hi);
 
 	/* Entry based controls */
 	rdmsr(IA32_VMX_ENTRY_CTLS, lo, hi);
 	pr_info("Entry Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(entry, 5, lo, hi);
+	report_capability(entryctl, 5, lo, hi);
 
 	check_bit_55();
 
