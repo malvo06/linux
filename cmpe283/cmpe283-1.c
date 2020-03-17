@@ -339,6 +339,8 @@ int
 init_module(void)
 {
 	printk(KERN_INFO "CMPE 283 Assignment 1 Module Start\n");
+	
+	detect_true_vmx_features();
 
 	detect_vmx_features();
 
