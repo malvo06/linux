@@ -17,6 +17,12 @@
 #define IA32_VMX_EXIT_CTLS 0x483
 #define IA32_VMX_ENTRY_CTLS 0x484
 
+#define IA32_VMX_BASIC 0x480
+#define IA32_VMX_TRUE_PINBASED_CTLS 0x48D
+#define IA32_VMX_TRUE_PROCBASED_CTLS 0x48E
+#define IA32_VMX_TRUE_EXIT_CTLS 0x48F
+#define IA32_TRUE_ENTRY_CTLS 0x490
+
 /*
  * struct caapability_info
  *
@@ -179,6 +185,102 @@ report_capability(struct capability_info *cap, uint8_t len, uint32_t lo,
 }
 
 /*
+ * detect_true_vmx_features
+ *
+ * Detects and prints true VMX capabilities of this host's CPU.
+ */
+void
+detect_true_vmx_features(void)
+{
+	uint32_t lo, hi;
+
+	/* True Pinbased Controls */
+	rdmsr(IA32_VMX_TRUE_PINBASED_CTLS, lo, hi);
+	pr_info("True Pinbased Controls MSR: 0x%llx\n",
+		(uint64_t)(lo | (uint64_t)hi << 32));
+	report_capability(pinbased, 5, lo, hi);
+
+
+	/* True Primary Procbased controls */
+	rdmsr(IA32_VMX_TRUE_PROCBASED_CTLS, lo, hi);
+	pr_info("True Primary Procbased Controls MSR: 0x%llx\n",
+		(uint64_t)(lo | (uint64_t)hi << 32));
+	report_capability(procbased, 21, lo, hi);
+
+	/* True Secondary Procbased controls */
+	rdmsr(IA32_VMX_TRUE_PROCBASED_CTLS, lo, hi);
+	pr_info("True Secondary Procbased Controls MSR: 0x%llx\n",
+		(uint64_t)(lo | (uint64_t)hi << 32));
+	report_capability(secondary_procbased, 27, lo, hi);
+
+
+	/* True Entry controls */
+	rdmsr(IA32_TRUE_ENTRY_CTLS, lo, hi);
+	pr_info("True Entry Controls MSR: 0x%llx\n",
+		(uint64_t)(lo | (uint64_t)hi << 32));
+	report_capability(entry_controls, 13, lo, hi);
+
+
+	/* True Exit controls */
+	rdmsr(IA32_VMX_TRUE_EXIT_CTLS, lo, hi);
+	pr_info("True Exit Controls MSR: 0x%llx\n",
+		(uint64_t)(lo | (uint64_t)hi << 32));
+	report_capability(exit_controls, 11, lo, hi);
+
+}
+
+/* Determine if true controls are available:
+ * 
+ * Read the IA32_VMX_BASIC MSR
+ * Check bit 55 – if set, true controls are available
+ */
+void
+check_bit_55(void)
+{
+	uint32_t lo, hi;
+
+	rdmsr(IA32_VMX_BASIC, lo, hi);
+	
+	if ( hi & (1 << (55 - 32)))
+	{
+		printk("**** True VMX Capabilities are available !!!  ****");
+		detect_true_vmx_features();
+	}
+	else
+	{
+		printk("**** True VMX Capabilities are NOT available !!!  ****");	
+	}
+}
+
+/* Determine if secondary procbased controls are available:
+ * 
+ * Read the IA32_VMX_PROCBASED_CTLS
+ * Check bit 63 – if set, secondary procbased controls are available
+ */
+void
+check_bit_63(void)
+{
+	uint32_t lo, hi;
+
+	/* Procbased controls */
+	rdmsr(IA32_VMX_PROCBASED_CTLS, lo, hi);
+
+	if ( hi & (1 << (63 - 32)))
+	{
+		printk("**** Secondary procbased controls are available !!! ****");
+			/* secondary procbased controls */
+			rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
+			pr_info("Secondary procbased Controls MSR: 0x%llx\n",
+				(uint64_t)(lo | (uint64_t)hi << 32));
+			report_capability(secondary_procbased, 23, lo, hi);
+	}
+	else
+	{
+		printk("**** Secondary procbased controls are NOT available !!! ****");
+	}
+}
+
+/*
  * detect_vmx_features
  *
  * Detects and prints VMX capabilities of this host's CPU.
@@ -199,6 +301,8 @@ detect_vmx_features(void)
 	pr_info("Procbased Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(procbased, 21, lo, hi);
+	
+	check_bit_63
 
 	/* Secondary Pinbased controls */
 	rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
@@ -218,7 +322,7 @@ detect_vmx_features(void)
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(entryctl, 11, lo, hi);
 
-	/* check_bit_55(); */
+	check_bit_55();
 
 }
 
