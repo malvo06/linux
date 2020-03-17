@@ -190,7 +190,7 @@ detect_vmx_features(void)
 
 	/* Pinbased controls */
 	rdmsr(IA32_VMX_PINBASED_CTLS, lo, hi);
-	pr_info("Pinbased Controls MSR: 0x%llx, IA32_VMX_PINBASED_CTLS\n",
+	pr_info("Pinbased Controls MSR: 0x%llx\n", IA32_VMX_PINBASED_CTLS,
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(pinbased, 5, lo, hi);
 
