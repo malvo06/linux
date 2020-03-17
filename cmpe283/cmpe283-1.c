@@ -192,7 +192,7 @@ report_capability(struct capability_info *cap, uint8_t len, uint32_t lo,
 void
 check_bit_63(void)
 {
-	uint32_t lo, hi;32
+	uint32_t lo, hi;
 
 	/* Procbased controls */
 	rdmsr(IA32_VMX_PROCBASED_CTLS, lo, hi);
