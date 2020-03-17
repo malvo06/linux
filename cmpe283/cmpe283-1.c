@@ -273,7 +273,7 @@ check_bit_63(void)
 			rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
 			pr_info("Secondary procbased Controls MSR: 0x%llx\n",
 				(uint64_t)(lo | (uint64_t)hi << 32));
-			report_capability(secondary_procbased, 23, lo, hi);
+			report_capability(procbased2, 27, lo, hi);
 	}
 	else
 	{
@@ -303,7 +303,7 @@ detect_vmx_features(void)
 		(uint64_t)(lo | (uint64_t)hi << 32));
 	report_capability(procbased, 21, lo, hi);
 	
-	check_bit_63
+	check_bit_63();
 
 	/* Secondary Pinbased controls */
 	rdmsr(IA32_VMX_PROCBASED_CTLS2, lo, hi);
