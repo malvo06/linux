@@ -211,21 +211,22 @@ detect_true_vmx_features(void)
 	rdmsr(IA32_VMX_TRUE_PROCBASED_CTLS, lo, hi);
 	pr_info("True Secondary Procbased Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(secondary_procbased, 27, lo, hi);
-
-
-	/* True Entry controls */
-	rdmsr(IA32_TRUE_ENTRY_CTLS, lo, hi);
-	pr_info("True Entry Controls MSR: 0x%llx\n",
-		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(entry_controls, 13, lo, hi);
+	report_capability(procbased2, 27, lo, hi);
 
 
 	/* True Exit controls */
 	rdmsr(IA32_VMX_TRUE_EXIT_CTLS, lo, hi);
 	pr_info("True Exit Controls MSR: 0x%llx\n",
 		(uint64_t)(lo | (uint64_t)hi << 32));
-	report_capability(exit_controls, 11, lo, hi);
+	report_capability(exitctl, 13, lo, hi);
+	
+
+	/* True Entry controls */
+	rdmsr(IA32_TRUE_ENTRY_CTLS, lo, hi);
+	pr_info("True Entry Controls MSR: 0x%llx\n",
+		(uint64_t)(lo | (uint64_t)hi << 32));
+	report_capability(entryctl, 11, lo, hi);
+
 
 }
 
