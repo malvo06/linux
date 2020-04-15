@@ -61,6 +61,15 @@
 #include "vmx.h"
 #include "x86.h"
 
+
+extern u32 kvm_register_eax;
+extern u32 kvm_register_ebx;
+extern u32 kvm_register_ecx;
+
+static int total_exit_counter = 0;
+static u64_t total_cpu_cycles = 0;
+
+
 MODULE_AUTHOR("Qumranet");
 MODULE_LICENSE("GPL");
 
@@ -5953,7 +5962,20 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	if (!kvm_vmx_exit_handlers[exit_reason])
 		goto unexpected_vmexit;
 
-	return kvm_vmx_exit_handlers[exit_reason](vcpu);
+	int kvm_exit_reason = kvm_vmx_exit_handlers[exit_reason](vcpu);
+        u64_t rdtsc_start, rdtsc_end, current_exit;
+        
+        // Calculate the total cpu cycles
+        clock_start = rdtsc();
+	clock_end = rdtsc();
+	current_exit = clock_end - clock_start;
+	total_cpu_cycles = total_cpu_cycles + current_exit;
+        
+        // All exits tracked. After testing this can be done for each flag. 
+        // Maybe use a switch to track by the leaf
+        total_exit_counter++;
+        
+        return kvm_exit_reason;
 
 unexpected_vmexit:
 	vcpu_unimpl(vcpu, "vmx: unexpected exit reason 0x%x\n", exit_reason);
