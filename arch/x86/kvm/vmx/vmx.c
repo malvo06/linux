@@ -5841,6 +5841,7 @@ void dump_vmcs(void)
 		       vmcs_read16(VIRTUAL_PROCESSOR_ID));
 }
 
+uint64_t clock_start = rdtsc();
 /*
  * The guest has exited.  See if we can fix it or if we need userspace
  * assistance.
@@ -5848,7 +5849,7 @@ void dump_vmcs(void)
 static int vmx_handle_exit(struct kvm_vcpu *vcpu, 
 	enum exit_fastpath_completion exit_fastpath)
 {	
-	uint64_t clock_start = rdtsc();
+	
     	atomic_inc(&num_exits);
  
 	
