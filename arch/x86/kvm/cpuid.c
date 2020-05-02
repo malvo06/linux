@@ -1054,7 +1054,7 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
-atomic64_t num_exits;
+atomic_t num_exits;
 EXPORT_SYMBOL(num_exits);
 
 atomic64_t cycle_counts;
