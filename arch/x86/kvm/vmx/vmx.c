@@ -5849,15 +5849,15 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	enum exit_fastpath_completion exit_fastpath)
 {
 	
+	{uint64_t clock_start = rdtsc();
+    	atomic_inc(&num_exits);}
+	
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 exit_reason = vmx->exit_reason;
 	u32 vectoring_info = vmx->idt_vectoring_info;
 
 	trace_kvm_exit(exit_reason, vcpu, KVM_ISA_VMX);
-	
-	
-	uint64_t clock_start = rdtsc();
-    	atomic_inc(&num_exits);
+
 
 	/*
 	 * Flush logged GPAs PML buffer, this will make dirty_bitmap more
@@ -5898,7 +5898,8 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	 * delivery event since it indicates guest is accessing MMIO.
 	 * The vm-exit can be triggered again after return to guest that
 	 * will cause infinite loop.
-	 */
+	 */uint64_t clock_start = rdtsc();
+    	atomic_inc(&num_exits);
 	if ((vectoring_info & VECTORING_INFO_VALID_MASK) &&
 			(exit_reason != EXIT_REASON_EXCEPTION_NMI &&
 			exit_reason != EXIT_REASON_EPT_VIOLATION &&
