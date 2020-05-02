@@ -62,9 +62,8 @@
 #include "x86.h"
 
 
-extern u32 kvm_register_eax;
-extern u32 kvm_register_ebx;
-extern u32 kvm_register_ecx;
+extern atomic_t exit_counter;
+extern atomic64_t cycle_counts;
 
 static int total_exit_counter = 0;
 static u64_t total_cpu_cycles = 0;
@@ -5628,7 +5627,7 @@ static void vmx_flush_pml_buffer(struct kvm_vcpu *vcpu)
 
 	pml_idx = vmcs_read16(GUEST_PML_INDEX);
 
-	/* Do nothing if PML buffer is empty */
+	/* Do nothing if PML buffer is empty */er
 	if (pml_idx == (PML_ENTITY_NUM - 1))
 		return;
 
@@ -5961,22 +5960,23 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 					 kvm_vmx_max_exit_handlers);
 	if (!kvm_vmx_exit_handlers[exit_reason])
 		goto unexpected_vmexit;
-
-	int kvm_exit_reason = kvm_vmx_exit_handlers[exit_reason](vcpu);
-        u64_t rdtsc_start, rdtsc_end, current_exit;
+	else{
+		int kvm_exit_reason = kvm_vmx_exit_handlers[exit_reason](vcpu);
+        	u64_t rdtsc_start, rdtsc_end, current_exit;
         
-        // Calculate the total cpu cycles
-        clock_start = rdtsc();
-	clock_end = rdtsc();
-	current_exit = clock_end - clock_start;
-	total_cpu_cycles = total_cpu_cycles + current_exit;
+        	// Calculate the total cpu cycles
+        	clock_start = rdtsc();
+		clock_end = rdtsc();
+		current_exit = clock_end - clock_start;
+		total_cpu_cycles = total_cpu_cycles + current_exit;
         
-        // All exits tracked. After testing this can be done for each flag. 
-        // Maybe use a switch to track by the leaf
-        total_exit_counter++;
+        	// All exits tracked. After testing this can be done for each flag. 
+        	// Maybe use a switch to track by the leaf
+        	total_exit_counter++;
+		
         
-        return kvm_exit_reason;
-
+        	return kvm_exit_reason;
+	}
 unexpected_vmexit:
 	vcpu_unimpl(vcpu, "vmx: unexpected exit reason 0x%x\n", exit_reason);
 	dump_vmcs();
