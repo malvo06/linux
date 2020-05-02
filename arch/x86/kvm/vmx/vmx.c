@@ -5958,14 +5958,14 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	else if (exit_reason == EXIT_REASON_EPT_MISCONFIG)
 		return handle_ept_misconfig(vcpu);
 #endif
-	uint64_t clock_start = rdtsc();
-    	atomic_inc(&num_exits);
 
 	exit_reason = array_index_nospec(exit_reason,
 					 kvm_vmx_max_exit_handlers);
 	if (!kvm_vmx_exit_handlers[exit_reason])
 		goto unexpected_vmexit;
 	else{
+		uint64_t clock_start = rdtsc();
+    		atomic_inc(&num_exits);
 		int kvm_exit_reason = kvm_vmx_exit_handlers[exit_reason](vcpu);
         	uint64_t current_exit;
         
