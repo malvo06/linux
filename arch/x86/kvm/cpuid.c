@@ -1069,7 +1069,8 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
-	
+	uint64_t low;
+	uint64_t high;
 	
 	
 	switch(eax)
@@ -1078,8 +1079,8 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 			eax = atomic_read(&num_exits); 
 			break;
 		case 0x4FFFFFFE:
-			uint64_t low = atomic64_read(&cycle_counts) & 0xffffffff;
-			uint64_t high = atomic64_read(&cycle_counts) >> 32; 
+			low = atomic64_read(&cycle_counts) & 0xffffffff;
+			high = atomic64_read(&cycle_counts) >> 32; 
 
 			ebx = high;
 			ecx = low;
