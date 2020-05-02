@@ -5847,10 +5847,12 @@ void dump_vmcs(void)
  */
 static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	enum exit_fastpath_completion exit_fastpath)
-{
-	
-	{uint64_t clock_start = rdtsc();
-    	atomic_inc(&num_exits);}
+{uint64_t clock_start = rdtsc();
+    	atomic_inc(&num_exits);
+ 
+ 
+ 
+ 
 	
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 exit_reason = vmx->exit_reason;
