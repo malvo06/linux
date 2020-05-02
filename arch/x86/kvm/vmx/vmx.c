@@ -62,11 +62,9 @@
 #include "x86.h"
 
 
-extern atomic_t exit_counter;
+extern atomic_t num_exits;
 extern atomic64_t cycle_counts;
 
-static int total_exit_counter = 0;
-static u64_t total_cpu_cycles = 0;
 
 
 MODULE_AUTHOR("Qumranet");
@@ -5850,6 +5848,11 @@ void dump_vmcs(void)
 static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	enum exit_fastpath_completion exit_fastpath)
 {
+	
+	uint64_t clock_start = rdtsc();
+    	atomic_inc(&num_exits);
+	
+	
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 exit_reason = vmx->exit_reason;
 	u32 vectoring_info = vmx->idt_vectoring_info;
@@ -5962,13 +5965,14 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 		goto unexpected_vmexit;
 	else{
 		int kvm_exit_reason = kvm_vmx_exit_handlers[exit_reason](vcpu);
-        	u64_t rdtsc_start, rdtsc_end, current_exit;
+        	uint64_t current_exit;
         
         	// Calculate the total cpu cycles
-        	clock_start = rdtsc();
-		clock_end = rdtsc();
+        	
+		uint64_t clock_end = rdtsc();
 		current_exit = clock_end - clock_start;
-		total_cpu_cycles = total_cpu_cycles + current_exit;
+		atomic64_add_return(current_exit, &cycle_counts);
+		//total_cpu_cycles = total_cpu_cycles + current_exit;
         
         	// All exits tracked. After testing this can be done for each flag. 
         	// Maybe use a switch to track by the leaf
