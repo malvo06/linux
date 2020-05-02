@@ -5625,7 +5625,7 @@ static void vmx_flush_pml_buffer(struct kvm_vcpu *vcpu)
 
 	pml_idx = vmcs_read16(GUEST_PML_INDEX);
 
-	/* Do nothing if PML buffer is empty */er
+	/* Do nothing if PML buffer is empty */
 	if (pml_idx == (PML_ENTITY_NUM - 1))
 		return;
 
