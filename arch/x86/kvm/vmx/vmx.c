@@ -5845,13 +5845,10 @@ void dump_vmcs(void)
  * The guest has exited.  See if we can fix it or if we need userspace
  * assistance.
  */
-static int vmx_handle_exit(struct kvm_vcpu *vcpu,
+static int vmx_handle_exit(struct kvm_vcpu *vcpu, 
 	enum exit_fastpath_completion exit_fastpath)
-{uint64_t clock_start = rdtsc();
-    	atomic_inc(&num_exits);
- 
- 
- 
+{	
+	
  
 	
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
@@ -5961,6 +5958,8 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	else if (exit_reason == EXIT_REASON_EPT_MISCONFIG)
 		return handle_ept_misconfig(vcpu);
 #endif
+	uint64_t clock_start = rdtsc();
+    	atomic_inc(&num_exits);
 
 	exit_reason = array_index_nospec(exit_reason,
 					 kvm_vmx_max_exit_handlers);
