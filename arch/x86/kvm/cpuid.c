@@ -1063,14 +1063,17 @@ EXPORT_SYMBOL(cycle_counts);
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
+	
+	uint64_t low;
+	uint64_t high;
 
 	if (cpuid_fault_enabled(vcpu) && !kvm_require_cpl(vcpu, 0))
 		return 1;
 
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
-	uint64_t low;
-	uint64_t high;
+	
+
 	
 	
 	switch(eax)
