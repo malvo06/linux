@@ -5848,7 +5848,8 @@ void dump_vmcs(void)
 static int vmx_handle_exit(struct kvm_vcpu *vcpu, 
 	enum exit_fastpath_completion exit_fastpath)
 {	
-	
+	uint64_t clock_start = rdtsc();
+    	atomic_inc(&num_exits);
  
 	
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
@@ -5964,8 +5965,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	if (!kvm_vmx_exit_handlers[exit_reason])
 		goto unexpected_vmexit;
 	else{
-		uint64_t clock_start = rdtsc();
-    		atomic_inc(&num_exits);
+		
 		int kvm_exit_reason = kvm_vmx_exit_handlers[exit_reason](vcpu);
         	uint64_t current_exit;
         
