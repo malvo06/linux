@@ -5849,7 +5849,11 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	enum exit_fastpath_completion exit_fastpath)
 {	
 
- 
+ 	unsigned long long clock_start, clock_end;
+	clock_start = rdtsc();
+    	atomic_inc(&num_exits);
+	
+	
 	
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 	u32 exit_reason = vmx->exit_reason;
@@ -5857,8 +5861,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 
 	trace_kvm_exit(exit_reason, vcpu, KVM_ISA_VMX);
 	
-	uint64_t clock_start = rdtsc();
-    	atomic_inc(&num_exits);
+	
 
 
 	/*
@@ -5973,7 +5976,7 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
         
         	// Calculate the total cpu cycles
         	
-		uint64_t clock_end = rdtsc();
+		// uint64_t clock_end = rdtsc();
 		current_exit = clock_end - clock_start;
 		atomic64_add_return(current_exit, &cycle_counts);
 		//total_cpu_cycles = total_cpu_cycles + current_exit;
