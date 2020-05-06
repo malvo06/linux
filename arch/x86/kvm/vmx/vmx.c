@@ -5841,7 +5841,6 @@ void dump_vmcs(void)
 		       vmcs_read16(VIRTUAL_PROCESSOR_ID));
 }
 
-uint64_t clock_start = rdtsc();
 /*
  * The guest has exited.  See if we can fix it or if we need userspace
  * assistance.
@@ -5901,8 +5900,8 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	 * delivery event since it indicates guest is accessing MMIO.
 	 * The vm-exit can be triggered again after return to guest that
 	 * will cause infinite loop.
-	 */uint64_t clock_start = rdtsc();
-    	atomic_inc(&num_exits);
+	uint64_t clock_start = rdtsc();
+    	atomic_inc(&num_exits);*/
 	if ((vectoring_info & VECTORING_INFO_VALID_MASK) &&
 			(exit_reason != EXIT_REASON_EXCEPTION_NMI &&
 			exit_reason != EXIT_REASON_EPT_VIOLATION &&
