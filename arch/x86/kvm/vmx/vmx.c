@@ -64,7 +64,8 @@
 
 extern atomic_t num_exits;
 extern atomic64_t cycle_counts;
-
+extern atomic_t exit_array[69]
+extern atomic64_t cycle_by_exit[69];
 
 
 MODULE_AUTHOR("Qumranet");
@@ -5970,14 +5971,19 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 	}
 	else {	
 		int kvm_exit_reason = kvm_vmx_exit_handlers[exit_reason](vcpu);
-        	uint64_t current_exit;
+        	uint64_t current_exit, old_counter;
         
         	// Calculate the total cpu cycles
 		uint64_t clock_end = rdtsc();
 		current_exit = clock_end - clock_start;
 		atomic64_add_return(current_exit, &cycle_counts);
 		//total_cpu_cycles = total_cpu_cycles + current_exit;
-        
+		
+		//Since the current_exit counts for every exit we need to grab that data for each exit
+		old_counter = cycle_by_exit[exit_reason];
+		cycle_by_exit[exit_reason] = old_counter + current_exit;
+		exit_array[exit_reason]++;
+	
         	// All exits tracked. After testing this can be done for each flag. 
         	// Maybe use a switch to track by the leaf
         	//total_exit_counter++;
