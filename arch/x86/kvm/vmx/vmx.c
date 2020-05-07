@@ -5851,12 +5851,9 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 {	
 	
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
-	
+
 	// initialize clock
 	uint64_t clock_start = rdtsc();
-	
-	u32 exit_reason = vmx->exit_reason;
-	u32 vectoring_info = vmx->idt_vectoring_info;
 
 	trace_kvm_exit(exit_reason, vcpu, KVM_ISA_VMX);
 	//increment the exit counter
