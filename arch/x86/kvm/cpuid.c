@@ -1105,7 +1105,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 		{
 			eax = atomic_read(&exit_array[ecx]);
 		}
-		else
+		else //the exits that are not enabled will be 0
 		{
 			eax = 0;
 			ebx = 0;
