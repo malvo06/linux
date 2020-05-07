@@ -1060,6 +1060,12 @@ EXPORT_SYMBOL(num_exits);
 atomic64_t cycle_counts;
 EXPORT_SYMBOL(cycle_counts);
 
+atomic_t exit_array[69];
+EXPORT_SYMBOL(exit_array);
+
+atomic64_t cycle_by_exit[69];
+EXPORT_SYMBOL(cycle_by_exit);
+
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 {
 	u32 eax, ebx, ecx, edx;
@@ -1086,14 +1092,54 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 		ebx = high;
 		ecx = low;
 	} //eax=0x4FFFFFFD exits for the exit number provided (on input from io) in %ecx return on eax
-	//else if (eax==0x4FFFFFFD)
-	//{
+	else if (eax==0x4FFFFFFD)
+	{
+		if(ecx < 0 || ecx > 68 || ecx == 35 || ecx == 38 || ecx == 42)
+		{
+			eax = 0;
+			ebx = 0;
+			ecx = 0;
+			edx = 0xFFFFFFFF;
+		} 
+		else if (exit_array[ecx]>0)
+		{
+			eax = atomic_read(&exit_array[ecx]);
+		}
+		else
+		{
+			eax = 0;
+			ebx = 0;
+			ecx = 0;
+			edx = 0;
+		}
 		//break;
-	//} //eax=0x4FFFFFFC time spent on exit (on input so io) in %ecx high 32 bits on ebx and low bits on ecx
-	//else if (eax==0x4FFFFFFC)
-	//{
-		//break;
-	//}
+	} //eax=0x4FFFFFFC time spent on exit (on input so io) in %ecx high 32 bits on ebx and low bits on ecx
+	else if (eax==0x4FFFFFFC)
+	{
+		if(ecx < 0 || ecx > 68 || ecx == 35 || ecx == 38 || ecx == 42)
+		{
+			eax = 0;
+			ebx = 0;
+			ecx = 0;
+			edx = 0xFFFFFFFF;
+		} 
+		else if (exit_array[ecx]>0)
+		{
+			low = atomic64_read(&cycle_by_exit[ecx]) & 0xffffffff;
+			high = atomic64_read(&cycle_by_exit[ecx]) >> 32; 
+
+			ebx = high;
+			ecx = low;
+		}
+		else
+		{
+			eax = 0;
+			ebx = 0;
+			ecx = 0;
+			edx = 0;
+		}
+			 
+	}
 	else
 	{
 		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
