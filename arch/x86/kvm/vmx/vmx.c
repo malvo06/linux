@@ -64,7 +64,7 @@
 
 extern atomic_t num_exits;
 extern atomic64_t cycle_counts;
-extern atomic_t exit_array[69]
+extern atomic_t exit_array[69];
 extern atomic64_t cycle_by_exit[69];
 
 
