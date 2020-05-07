@@ -1073,24 +1073,30 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 	eax = kvm_rax_read(vcpu);
 	ecx = kvm_rcx_read(vcpu);
 	
-
-	
-	
-	switch(eax)
+	// eax=0x4FFFFFFF Return the total number of exits (all types) in %eax
+	if(eax==0x4FFFFFFF)
 	{
-		case 0x4FFFFFFF:
-			eax = atomic_read(&num_exits); 
-			break;
-		case 0x4FFFFFFE:
-			low = atomic64_read(&cycle_counts) & 0xffffffff;
-			high = atomic64_read(&cycle_counts) >> 32; 
+		eax = atomic_read(&num_exits);
+	} //eax=0x4FFFFFFE time spent on exits high 32 bits on ebx and low bits on ecx
+	else if (eax==0x4FFFFFFE)
+	{
+		low = atomic64_read(&cycle_counts) & 0xffffffff;
+		high = atomic64_read(&cycle_counts) >> 32; 
 
-			ebx = high;
-			ecx = low;
-			break;
-	
-		default:
-			kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
+		ebx = high;
+		ecx = low;
+	} //eax=0x4FFFFFFD exits for the exit number provided (on input from io) in %ecx return on eax
+	//else if (eax==0x4FFFFFFD)
+	//{
+		//break;
+	//} //eax=0x4FFFFFFC time spent on exit (on input so io) in %ecx high 32 bits on ebx and low bits on ecx
+	//else if (eax==0x4FFFFFFC)
+	//{
+		//break;
+	//}
+	else
+	{
+		kvm_cpuid(vcpu, &eax, &ebx, &ecx, &edx, true);
 	}
 	kvm_rax_write(vcpu, eax);
 	kvm_rbx_write(vcpu, ebx);
