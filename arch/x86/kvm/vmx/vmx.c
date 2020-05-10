@@ -5854,7 +5854,8 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 
 	// initialize clock
 	uint64_t clock_start = rdtsc();
-
+	u32 exit_reason = vmx->exit_reason;
+	u32 vectoring_info = vmx->idt_vectoring_info;
 	trace_kvm_exit(exit_reason, vcpu, KVM_ISA_VMX);
 	//increment the exit counter
 	atomic_inc(&num_exits);
@@ -5962,29 +5963,33 @@ static int vmx_handle_exit(struct kvm_vcpu *vcpu,
 
 	exit_reason = array_index_nospec(exit_reason,
 					 kvm_vmx_max_exit_handlers);
+
 	if (!kvm_vmx_exit_handlers[exit_reason])
 	{
 		goto unexpected_vmexit;
 	}
-	else {	
+	else 
+	{
 		int kvm_exit_reason = kvm_vmx_exit_handlers[exit_reason](vcpu);
-        	uint64_t current_exit, old_counter;
+       		uint64_t current_exit;
         
-        	// Calculate the total cpu cycles
+       		// Calculate the total cpu cycles
 		uint64_t clock_end = rdtsc();
 		current_exit = clock_end - clock_start;
-		atomic64_add_return(current_exit, &cycle_counts);
+		atomic64_add(current_exit, &cycle_counts);
+		atomic_inc(&exit_array[(int)exit_reason]);
+		atomic64_add(current_exit, &cycle_by_exit[(int)exit_reason]);
 		//total_cpu_cycles = total_cpu_cycles + current_exit;
 		
 		//Since the current_exit counts for every exit we need to grab that data for each exit
-		old_counter = cycle_by_exit[exit_reason];
-		cycle_by_exit[exit_reason] = old_counter + current_exit;
-		exit_array[exit_reason]++;
+		//old_counter = cycle_by_exit[exit_reason];
+		//cycle_by_exit[exit_reason] = old_counter + current_exit;
+		//exit_array[exit_reason]++;
 	
         	// All exits tracked. After testing this can be done for each flag. 
         	// Maybe use a switch to track by the leaf
         	//total_exit_counter++;
-        	return kvm_exit_reason;
+       		return kvm_exit_reason;
 	}
 unexpected_vmexit:
 	vcpu_unimpl(vcpu, "vmx: unexpected exit reason 0x%x\n", exit_reason);

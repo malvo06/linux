@@ -1054,16 +1054,16 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
 }
 EXPORT_SYMBOL_GPL(kvm_cpuid);
 
-atomic_t num_exits;
+static atomic_t num_exits;
 EXPORT_SYMBOL(num_exits);
 
-atomic64_t cycle_counts;
+static atomic64_t cycle_counts;
 EXPORT_SYMBOL(cycle_counts);
 
-atomic_t exit_array[69];
+static atomic_t exit_array[69];
 EXPORT_SYMBOL(exit_array);
 
-atomic64_t cycle_by_exit[69];
+static atomic64_t cycle_by_exit[69];
 EXPORT_SYMBOL(cycle_by_exit);
 
 int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
@@ -1101,7 +1101,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 			ecx = 0;
 			edx = 0xFFFFFFFF;
 		} 
-		else if (exit_array[ecx]>0)
+		else if (ecx == 3 || ecx == 4 || ecx == 5 || ecx == 6  || ecx == 11  || ecx == 16  || ecx == 17  || ecx == 33  || ecx == 34  || ecx == 51 || ecx == 66  )
 		{
 			eax = atomic_read(&exit_array[ecx]);
 		}
@@ -1123,7 +1123,7 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 			ecx = 0;
 			edx = 0xFFFFFFFF;
 		} 
-		else if (exit_array[ecx]>0)
+		else if (ecx == 3 || ecx == 4 || ecx == 5 || ecx == 6  || ecx == 11  || ecx == 16  || ecx == 17  || ecx == 33  || ecx == 34  || ecx == 51 || ecx == 66)
 		{
 			low = atomic64_read(&cycle_by_exit[ecx]) & 0xffffffff;
 			high = atomic64_read(&cycle_by_exit[ecx]) >> 32; 
@@ -1139,6 +1139,16 @@ int kvm_emulate_cpuid(struct kvm_vcpu *vcpu)
 			edx = 0;
 		}
 			 
+	}
+	else if (eax==0x4FFFFFFB)
+	{
+		uint32_t i=0;
+		printk("In leaf 0x4ffffffb");
+		eax=ebx=ecx=edx=0xffffffff;
+		for(i=0;i<69;i++)
+		{
+			printk("Exit number %d and number of exits: %d and number of cycles: %lld ",i,atomic_read(&exit_array[i]),atomic64_read(&cycle_by_exit[i]));
+		}
 	}
 	else
 	{
